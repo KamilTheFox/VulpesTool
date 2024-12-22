@@ -60,21 +60,25 @@ namespace VulpesTool.Editor
 
             Color defaultColor = GUI.color;
             GUI.color = buttonAttr.Color.GetColorFromFlags();
-
-            if (GUI.Button(buttonRect, buttonAttr.ButtonText ?? buttonAttr.MethodName))
+            ButtonUtils.ButtonEnable(() =>
             {
-                var method = property.serializedObject.targetObject.GetType()
-                    .GetMethod(buttonAttr.MethodName,
-                        BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
-                if (method != null)
+                if (GUI.Button(buttonRect, buttonAttr.ButtonText ?? buttonAttr.MethodName))
                 {
-                    var targets = property.serializedObject.targetObjects;
+                    var method = property.serializedObject.targetObject.GetType()
+                        .GetMethod(buttonAttr.MethodName,
+                            BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+                    if (method != null)
+                    {
+                        var targets = property.serializedObject.targetObjects;
 
-                    ButtonUtils.ClickButtonMethod(method,
-                        buttonAttr.ButtonText ?? buttonAttr.MethodName,
-                        buttonAttr.IsChangeScene, targets);
+                        ButtonUtils.ClickButtonMethod(method,
+                            buttonAttr.ButtonText ?? buttonAttr.MethodName,
+                            buttonAttr.IsChangeScene, targets);
+                    }
                 }
-            }
+            },
+            buttonAttr.IfEnable,
+            property.serializedObject.targetObject);
             GUI.color = defaultColor;
         }
     }

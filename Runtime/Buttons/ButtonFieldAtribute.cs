@@ -21,9 +21,11 @@ namespace VulpesTool
 
         public bool IsChangeScene { get; private set; }
 
+        public string IfEnable { get; private set; }
+
         public ButtonFieldAttribute(string methodName, string buttonText = null,
             ColorsGUI color = ColorsGUI.White, ButtonPosition position = ButtonPosition.Before,
-            float buttonWidth = 60f, bool isChangeScene = false)
+            float buttonWidth = 60f, bool isChangeScene = false, string ifEnable = "")
         {
             MethodName = methodName;
             ButtonText = buttonText;
@@ -31,6 +33,7 @@ namespace VulpesTool
             Position = position;
             ButtonWidth = buttonWidth;
             IsChangeScene = isChangeScene;
+            IfEnable = ifEnable;
         }
     }
 }

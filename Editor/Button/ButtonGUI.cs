@@ -36,10 +36,17 @@ namespace VulpesTool.Editor
 
                 GUI.color = buttonAttr.Color.GetColorFromFlags();
 
-                if (GUILayout.Button(buttonName))
+
+                ButtonUtils.ButtonEnable(() =>
                 {
-                    ButtonUtils.ClickButtonMethod(method, buttonName, buttonAttr.IsChangeScene, targets);
-                }
+                    if (GUILayout.Button(buttonName))
+                    {
+                        ButtonUtils.ClickButtonMethod(method, buttonName, buttonAttr.IsChangeScene, targets);
+                    }
+                },
+                buttonAttr.IfEnable,
+                target);
+
                 GUI.color = defaultColor;
             }
         }
