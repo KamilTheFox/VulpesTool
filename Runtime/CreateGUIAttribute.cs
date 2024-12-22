@@ -18,9 +18,6 @@ namespace VulpesTool
         public bool IsDockable { get; }
         public bool IsUtility { get; }
         public bool IsModal { get; }
-        /// <summary>
-        /// !!! -------> Может скрыть другие аттрибуты к полям и методам <------- !!!
-        /// </summary>
         public bool ShowInspector { get; }
         public int Order { get; } 
         public string Group { get; }
