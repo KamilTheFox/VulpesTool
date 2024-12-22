@@ -7,7 +7,7 @@ using UnityEditor;
 
 namespace VulpesTool.Editor
 {
-    [CustomEditor(typeof(UnityEngine.Object), true), CanEditMultipleObjects]
+    //[CustomEditor(typeof(UnityEngine.Object), true), CanEditMultipleObjects]
     public class ButtonAttributeEditor : UnityEditor.Editor
     {
         private static Type targetType;
