@@ -19,15 +19,18 @@ namespace VulpesTool
         public ButtonPosition Position { get; private set; }
         public float ButtonWidth { get; private set; }
 
+        public bool IsChangeScene { get; private set; }
+
         public ButtonFieldAttribute(string methodName, string buttonText = null,
             ColorsGUI color = ColorsGUI.White, ButtonPosition position = ButtonPosition.Before,
-            float buttonWidth = 60f)
+            float buttonWidth = 60f, bool isChangeScene = false)
         {
             MethodName = methodName;
             ButtonText = buttonText;
             Color = color;
             Position = position;
             ButtonWidth = buttonWidth;
+            IsChangeScene = isChangeScene;
         }
     }
 }

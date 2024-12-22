@@ -38,15 +38,7 @@ namespace VulpesTool.Editor
 
                 if (GUILayout.Button(buttonName))
                 {
-                    foreach (var targetObject in targets)
-                    {
-                        var targetMono = targetObject as MonoBehaviour;
-                        if (targetMono != null)
-                        {
-                            Undo.RecordObject(targetMono, $"Execute {buttonName}");
-                            method.Invoke(targetMono, null);
-                        }
-                    }
+                    ButtonUtils.ClickButtonMethod(method, buttonName, buttonAttr.IsChangeScene, targets);
                 }
                 GUI.color = defaultColor;
             }

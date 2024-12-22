@@ -68,8 +68,11 @@ namespace VulpesTool.Editor
                         BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
                 if (method != null)
                 {
-                    Undo.RecordObject(property.serializedObject.targetObject, $"Execute {property.serializedObject.targetObject}");
-                    method.Invoke(property.serializedObject.targetObject, null);
+                    var targets = property.serializedObject.targetObjects;
+
+                    ButtonUtils.ClickButtonMethod(method,
+                        buttonAttr.ButtonText ?? buttonAttr.MethodName,
+                        buttonAttr.IsChangeScene, targets);
                 }
             }
             GUI.color = defaultColor;
