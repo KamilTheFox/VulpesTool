@@ -1,0 +1,16 @@
+{
+    "name": "VulpesTool.Editor",
+    "rootNamespace": "VulpesTool.Editor",
+    "references": [
+        "GUID:e346cbb246fa4b24390b2c38d2883c53"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
