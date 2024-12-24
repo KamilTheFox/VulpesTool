@@ -7,7 +7,6 @@ using UnityEditor;
 
 namespace VulpesTool.Editor
 {
-    //[CustomEditor(typeof(UnityEngine.Object), true), CanEditMultipleObjects]
     public class ButtonAttributeEditor : UnityEditor.Editor
     {
         private static Type targetType;
@@ -25,6 +24,9 @@ namespace VulpesTool.Editor
         public override void OnInspectorGUI()
         {
             base.DrawDefaultInspector();
+
+            if (VulpesUtils.IsVulpesObject() == false)
+                return;
 
             EndBoxDrawer.CheckEndBox();
 

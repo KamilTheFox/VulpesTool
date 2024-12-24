@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace VulpesTool.Editor
 {
-    [CustomEditor(typeof(UnityEngine.Object), true), CanEditMultipleObjects]
+    
     public class CustomGUIEditor : ButtonAttributeEditor
     {
         private Dictionary<string, bool> groupFoldouts = new Dictionary<string, bool>();
@@ -95,6 +95,10 @@ namespace VulpesTool.Editor
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
+            if (VulpesUtils.IsVulpesObject() == false)
+            {
+                return;
+            }
             DrawGUIMethods();
         }
     }

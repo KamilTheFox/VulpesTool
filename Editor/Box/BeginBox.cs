@@ -18,6 +18,9 @@ namespace VulpesTool.Editor
 
         public override void OnGUI(Rect position)
         {
+            if (VulpesUtils.IsVulpesObject() == false)
+                return;
+
             var attr = (BeginBoxAttribute)attribute;
 
             BoxDrawerState.oldColor = GUI.color;
@@ -38,6 +41,9 @@ namespace VulpesTool.Editor
 
         public override float GetHeight()
         {
+            if (VulpesUtils.IsVulpesObject() == false)
+                return 0;
+            
             var attr = (BeginBoxAttribute)attribute;
             return (!string.IsNullOrEmpty(attr.Title) ? 25 : SPACE_SIZE) + SPACE_SIZE;
         }
@@ -50,6 +56,9 @@ namespace VulpesTool.Editor
 
         public override void OnGUI(Rect position)
         {
+            if (VulpesUtils.IsVulpesObject() == false)
+                return;
+
             if (BoxDrawerState.BoxStack.Count > 0)
             {
                 var (startY, boxColor) = BoxDrawerState.BoxStack.Pop();
@@ -68,7 +77,7 @@ namespace VulpesTool.Editor
             GUI.color = BoxDrawerState.oldColor;
         }
 
-        public override float GetHeight() => SPACE_SIZE;
+        public override float GetHeight() => VulpesUtils.IsVulpesObject() == false ? 0 : SPACE_SIZE;
 
         private static void DrawBox(Rect position, float startY, Color boxColor)
         {

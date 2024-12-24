@@ -9,6 +9,11 @@ namespace VulpesTool.Editor
     {
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
+            if (VulpesUtils.IsVulpesObject(property) == false)
+            {
+                return EditorGUIUtility.singleLineHeight;
+            }
+
             var buttonAttr = attribute as ButtonFieldAttribute;
             if (buttonAttr.Position == ButtonPosition.Before || buttonAttr.Position == ButtonPosition.After)
                 return EditorGUIUtility.singleLineHeight * 2 + EditorGUIUtility.standardVerticalSpacing;
@@ -18,6 +23,12 @@ namespace VulpesTool.Editor
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
+            if (VulpesUtils.IsVulpesObject(property) == false)
+            {
+                EditorGUI.PropertyField(position, property, label, true);
+                return;
+            }
+
             var buttonAttr = attribute as ButtonFieldAttribute;
             var buttonRect = new Rect();
             var propertyRect = new Rect();
