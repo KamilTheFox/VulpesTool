@@ -25,17 +25,12 @@ namespace VulpesTool.Editor
         {
             if (isTracking && GUI.changed)
             {
-                int newHash = GetObjectHash(currentTarget);
+                Undo.RecordObject(currentTarget, "GUI Change");
 
-                if (newHash != originalHash)
-                {
-                    Undo.RecordObject(currentTarget, "GUI Change");
+                if (currentTarget is Component comp)
+                    EditorSceneManager.MarkSceneDirty(comp.gameObject.scene);
 
-                    if (currentTarget is Component comp)
-                        EditorSceneManager.MarkSceneDirty(comp.gameObject.scene);
-
-                    EditorUtility.SetDirty(currentTarget);
-                }
+                EditorUtility.SetDirty(currentTarget);
             }
 
             isTracking = false;
