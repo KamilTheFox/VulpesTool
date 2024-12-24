@@ -14,7 +14,7 @@ namespace VulpesTool.Editor
         private void DrawGUIMethods()
         {
             var methods = target.GetType()
-                .GetMethods(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)
+                .GetAllMethods()
                 .Where(m => m.GetCustomAttribute<CreateGUIAttribute>() != null)
                 .OrderBy(m => m.GetCustomAttribute<CreateGUIAttribute>().Order)
                 .GroupBy(m => m.GetCustomAttribute<CreateGUIAttribute>().Group);

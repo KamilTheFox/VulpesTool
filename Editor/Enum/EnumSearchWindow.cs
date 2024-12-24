@@ -164,7 +164,7 @@ namespace VulpesTool.Editor
             targetProperty = null;
         }
     }
-    public static class SerializedPropertyExtensions
+    internal static class SerializedPropertyExtensions
     {
         public static Type GetEnumType(this SerializedProperty property)
         {

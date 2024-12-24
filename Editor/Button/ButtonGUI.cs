@@ -14,8 +14,7 @@ namespace VulpesTool.Editor
         public void OnEnable()
         {
             targetType = target.GetType();
-            methods = targetType
-                .GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
+            methods = targetType.GetAllMethods()
                 .Where(m => m.GetCustomAttributes(typeof(ButtonAttribute), false).Length > 0)
                 .OrderBy(m => m.GetCustomAttribute<ButtonAttribute>().Order);
         }
