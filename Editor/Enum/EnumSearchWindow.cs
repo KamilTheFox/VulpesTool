@@ -41,7 +41,14 @@ namespace VulpesTool.Editor
             }
 
             dragRect.width = position.width;
-            GUI.Box(dragRect, "Select Value");
+
+            EditorGUI.LabelField(
+                   dragRect,
+                   "Select Value",
+                   new GUIStyle(GUI.skin.label)
+                   {
+                       alignment = TextAnchor.MiddleCenter
+                   });
             EditorGUI.BeginChangeCheck();
 
             GUILayout.Space(DragHeight);

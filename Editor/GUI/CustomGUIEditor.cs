@@ -47,6 +47,13 @@ namespace VulpesTool.Editor
                             Color defaultColor = GUI.color;
                             GUI.color = attr.Color.GetColorFromFlags();
 
+                            var centeredStyle = new GUIStyle(GUI.skin.label)
+                            {
+                                alignment = TextAnchor.MiddleCenter
+                            };
+
+                            EditorGUILayout.LabelField(buttonName, centeredStyle);
+
                             GUITracker.StartTracking(target);
                             method.Invoke(target, null);
                             GUITracker.EndTracking();

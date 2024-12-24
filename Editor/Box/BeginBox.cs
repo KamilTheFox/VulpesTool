@@ -34,8 +34,10 @@ namespace VulpesTool.Editor
                 EditorGUI.LabelField(
                     new Rect(position.x, position.y + SPACE_SIZE, position.width, 20),
                     attr.Title,
-                    EditorStyles.boldLabel
-                );
+                    new GUIStyle(GUI.skin.label)
+                    {
+                        alignment = TextAnchor.MiddleCenter
+                    });
             }
         }
 
