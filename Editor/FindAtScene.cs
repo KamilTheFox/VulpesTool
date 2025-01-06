@@ -27,8 +27,6 @@ namespace VulpesTool.Editor
                     }
                 }
                 EditorGUI.PropertyField(position, property, label, true);
-                EditorApplication.hierarchyChanged -= OnHierarchyChanged;
-                EditorApplication.hierarchyChanged += OnHierarchyChanged;
             }
             else
             {
@@ -37,39 +35,7 @@ namespace VulpesTool.Editor
 
             EditorGUI.EndProperty();
         }
-        private void OnHierarchyChanged()
-        {
-            // Находим все объекты с нашим атрибутом и обновляем их
-            var objects = UnityEngine.Object.FindObjectsOfType<MonoBehaviour>();
-            foreach (var obj in objects)
-            {
-                var serializedObject = new SerializedObject(obj);
-                var iterator = serializedObject.GetIterator();
-                while (iterator.NextVisible(true))
-                {
-                    if (iterator.propertyType == SerializedPropertyType.ObjectReference)
-                    {
-                        foreach (var attr in fieldInfo.GetCustomAttributes(typeof(FindAtSceneAttribute), true))
-                        {
-                            if (iterator.objectReferenceValue == null)
-                            {
-                                UpdateReference(iterator);
-                                serializedObject.ApplyModifiedProperties();
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        private void UpdateReference(SerializedProperty property)
-        {
-            System.Type typeOfObject = fieldInfo.FieldType;
-            UnityEngine.Object foundObject = UnityEngine.Object.FindObjectOfType(typeOfObject);
-            if (foundObject != null)
-            {
-                property.objectReferenceValue = foundObject;
-            }
-        }
+        
     }
     
 }
