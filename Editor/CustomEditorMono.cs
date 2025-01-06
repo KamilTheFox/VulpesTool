@@ -8,7 +8,7 @@ using UnityEditor;
 namespace VulpesTool.Editor
 {
     [CustomEditor(typeof(VulpesMonoBehaviour), true), CanEditMultipleObjects]
-    public class CustomEditorMono : CustomGUIEditor
+    public class CustomEditorMono : MainCustomVulpesEditor
     {
 
     }

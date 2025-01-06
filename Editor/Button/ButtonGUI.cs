@@ -7,22 +7,26 @@ using UnityEditor;
 
 namespace VulpesTool.Editor
 {
-    public class ButtonAttributeEditor : UnityEditor.Editor
+    public class ButtonDrawerGUI : IDrawerGUI
     {
         private static Type targetType;
+
         private IEnumerable<MethodInfo> methods;
-        public void OnEnable()
+
+        private UnityEditor.Editor editor;
+
+        public void OnEnable(UnityEditor.Editor editor)
         {
-            targetType = target.GetType();
+            this.editor = editor;
+            targetType = editor.target.GetType();
             methods = targetType.GetAllMethods()
                 .Where(m => m.GetCustomAttributes(typeof(ButtonAttribute), false).Length > 0)
                 .OrderBy(m => m.GetCustomAttribute<ButtonAttribute>().Order);
         }
 
         public Transform transform = null;
-        public override void OnInspectorGUI()
+        public void OnInspectorGUI()
         {
-            base.DrawDefaultInspector();
 
             if (VulpesUtils.IsVulpesObject() == false)
                 return;
@@ -42,11 +46,11 @@ namespace VulpesTool.Editor
                 {
                     if (GUILayout.Button(buttonName))
                     {
-                        ButtonUtils.ClickButtonMethod(method, buttonName, buttonAttr.IsChangeScene, targets);
+                        ButtonUtils.ClickButtonMethod(method, buttonName, buttonAttr.IsChangeScene, editor.targets);
                     }
                 },
                 buttonAttr.IfEnable,
-                target);
+                editor.target);
 
                 GUI.color = defaultColor;
             }
