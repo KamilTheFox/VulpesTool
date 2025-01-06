@@ -16,7 +16,10 @@ namespace VulpesTool.Editor
         private Dictionary<string, bool> categoryFoldouts = new Dictionary<string, bool>();
 
         private Rect dragRect;
-        private const float DragHeight = 20f; 
+        private const float DragHeight = 20f;
+
+        private bool isFlags;
+        private long currentFlags;
 
         void OnEnable()
         {
@@ -29,17 +32,19 @@ namespace VulpesTool.Editor
             window.titleContent = new GUIContent("Select " + property.type);
             window.targetProperty = property;
             window.minSize = new Vector2(300, 400);
+
+            var enumType = property.GetEnumType();
+            window.isFlags = enumType.GetCustomAttribute<FlagsAttribute>() != null;
+            if (window.isFlags)
+            {
+                window.currentFlags = property.longValue;
+            }
+
             window.ShowAsDropDown(buttonRect, new Vector2(300, 400));
         }
 
         private void OnGUI()
         {
-            if (targetProperty == null)
-            {
-                this.Close();
-                return;
-            }
-
             dragRect.width = position.width;
 
             EditorGUI.LabelField(
@@ -49,9 +54,36 @@ namespace VulpesTool.Editor
                    {
                        alignment = TextAnchor.MiddleCenter
                    });
-            EditorGUI.BeginChangeCheck();
 
             GUILayout.Space(DragHeight);
+
+            if (isFlags)
+            {
+                EditorGUILayout.BeginHorizontal();
+
+                if (GUILayout.Button("Apply"))
+                {
+                    targetProperty = null;
+                }
+
+                if (GUILayout.Button("Clear All"))
+                {
+                    currentFlags = 0;
+                    targetProperty.longValue = 0;
+                    targetProperty.serializedObject.ApplyModifiedProperties();
+                }
+
+                EditorGUILayout.EndHorizontal();
+            }
+
+            if (targetProperty == null)
+            {
+                this.Close();
+                return;
+            }
+
+            
+            EditorGUI.BeginChangeCheck();
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
 
             GUI.SetNextControlName("SearchField");
@@ -148,12 +180,40 @@ namespace VulpesTool.Editor
             string label = value.ToString();
             string tooltip = attr?.Description ?? "";
 
-            if (GUILayout.Button(new GUIContent(label, tooltip)))
+            if (isFlags)
             {
-                Undo.RecordObject(targetProperty.serializedObject.targetObject, $"Execute {targetProperty.serializedObject.targetObject}");
-                targetProperty.intValue = (int)value;
-                targetProperty.serializedObject.ApplyModifiedProperties();
-                Close();
+                long enumValue = Convert.ToInt64(value);
+                bool isSelected = (currentFlags & enumValue) == enumValue;
+
+                EditorGUI.BeginChangeCheck();
+                bool newState = EditorGUILayout.ToggleLeft(new GUIContent(label, tooltip), isSelected);
+                if (EditorGUI.EndChangeCheck())
+                {
+                    if (newState)
+                    {
+                        currentFlags |= enumValue;
+                    }
+                    else
+                    {
+                        currentFlags &= ~enumValue;
+                    }
+
+                    Undo.RecordObject(targetProperty.serializedObject.targetObject,
+                        $"Change {targetProperty.serializedObject.targetObject}");
+                    targetProperty.longValue = currentFlags;
+                    targetProperty.serializedObject.ApplyModifiedProperties();
+                }
+            }
+            else
+            {
+                if (GUILayout.Button(new GUIContent(label, tooltip)))
+                {
+                    Undo.RecordObject(targetProperty.serializedObject.targetObject,
+                        $"Execute {targetProperty.serializedObject.targetObject}");
+                    targetProperty.intValue = (int)value;
+                    targetProperty.serializedObject.ApplyModifiedProperties();
+                    Close();
+                }
             }
         }
 

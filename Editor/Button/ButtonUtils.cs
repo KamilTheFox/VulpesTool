@@ -34,11 +34,11 @@ namespace VulpesTool.Editor
         {
             foreach (var targetObject in targets)
             {
-                if(targetObject is MonoBehaviour targetMono)
+                if(targetObject is UnityEngine.Object target)
                 {
-                    Undo.RecordObject(targetMono, $"Execute {buttonName}");
-                    method.Invoke(targetMono, null);
-                    if (isSaveScene)
+                    Undo.RecordObject(target, $"Execute {buttonName}");
+                    method.Invoke(target, null);
+                    if (isSaveScene && targetObject is MonoBehaviour targetMono)
                         SaveScene(targetMono.gameObject);
                 }
             }

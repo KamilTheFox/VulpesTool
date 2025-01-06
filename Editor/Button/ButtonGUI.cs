@@ -13,11 +13,11 @@ namespace VulpesTool.Editor
 
         private IEnumerable<MethodInfo> methods;
 
-        private UnityEditor.Editor editor;
+        private static UnityEditor.Editor editor;
 
-        public void OnEnable(UnityEditor.Editor editor)
+        public void OnEnable(UnityEditor.Editor _editor)
         {
-            this.editor = editor;
+            editor = _editor;
             targetType = editor.target.GetType();
             methods = targetType.GetAllMethods()
                 .Where(m => m.GetCustomAttributes(typeof(ButtonAttribute), false).Length > 0)
@@ -27,7 +27,6 @@ namespace VulpesTool.Editor
         public Transform transform = null;
         public void OnInspectorGUI()
         {
-
             if (VulpesUtils.IsVulpesObject() == false)
                 return;
 
@@ -38,9 +37,7 @@ namespace VulpesTool.Editor
                 var buttonAttr = method.GetCustomAttribute<ButtonAttribute>();
                 string buttonName = string.IsNullOrEmpty(buttonAttr.ButtonName) ? method.Name : buttonAttr.ButtonName;
                 Color defaultColor = GUI.color;
-
                 GUI.color = buttonAttr.Color.GetColorFromFlags();
-
 
                 ButtonUtils.ButtonEnable(() =>
                 {

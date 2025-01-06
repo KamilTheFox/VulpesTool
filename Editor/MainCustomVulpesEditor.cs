@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 
 namespace VulpesTool.Editor
 {
@@ -32,65 +33,139 @@ namespace VulpesTool.Editor
     public class SceneReferenceTracker
     {
         private static bool initialized = false;
+        private static bool isProcessing;
 
         static SceneReferenceTracker()
         {
             if (!initialized)
             {
                 EditorApplication.hierarchyChanged += OnHierarchyChanged;
-
+                EditorSceneManager.sceneOpened += OnSceneOpened;
+                EditorSceneManager.sceneClosed += OnSceneClosed;
                 initialized = true;
             }
         }
+
+        private static void OnSceneOpened(UnityEngine.SceneManagement.Scene scene, OpenSceneMode mode)
+        {
+            EditorApplication.delayCall += () =>
+            {
+                UpdateReferences();
+            };
+        }
+
+        private static void OnSceneClosed(UnityEngine.SceneManagement.Scene scene)
+        {
+            EditorApplication.delayCall += () =>
+            {
+                UpdateReferences();
+            };
+        }
+
         private static void OnHierarchyChanged()
         {
+            UpdateReferences();
+        }
 
-            var objects = UnityEngine.Object.FindObjectsOfType<MonoBehaviour>();
+        private static void UpdateReferences()
+        {
+            if (isProcessing) return;
+            if (EditorApplication.isCompiling || EditorApplication.isPlayingOrWillChangePlaymode) return;
 
-            foreach (var obj in objects)
+            try
             {
-                var serializedObject = new SerializedObject(obj);
-                var properties = new List<SerializedProperty>();
+                isProcessing = true;
 
-                var iterator = serializedObject.GetIterator();
-
-                while (iterator.NextVisible(true))
+                for (int i = 0; i < EditorSceneManager.sceneCount; i++)
                 {
-                    properties.Add(serializedObject.FindProperty(iterator.propertyPath));
-                }
+                    var scene = EditorSceneManager.GetSceneAt(i);
+                    if (!scene.isLoaded) continue;
 
-                bool modified = false;
+                    var sceneObjects = scene.GetRootGameObjects();
+                    var objects = new List<MonoBehaviour>();
 
-                foreach (var property in properties)
-                {
-                    var fieldInfo = obj.GetType().GetField(property.name,
-                        System.Reflection.BindingFlags.Instance |
-                        System.Reflection.BindingFlags.Public |
-                        System.Reflection.BindingFlags.NonPublic);
-
-                    if (fieldInfo != null)
+                    foreach (var obj in sceneObjects)
                     {
-                        var attributes = fieldInfo.GetCustomAttributes(typeof(FindAtSceneAttribute), true);
+                        objects.AddRange(obj.GetComponentsInChildren<MonoBehaviour>(true));
+                    }
 
-                        if (attributes.Length > 0 &&
-                            property.propertyType == SerializedPropertyType.ObjectReference &&
-                            property.objectReferenceValue == null)
+                    foreach (var obj in objects)
+                    {
+                        SerializeMonoBehaviour(obj, scene);
+                    }
+                }
+            }
+            finally
+            {
+                isProcessing = false;
+            }
+        }
+        private static void SerializeMonoBehaviour(MonoBehaviour behaviour, UnityEngine.SceneManagement.Scene scene)
+        {
+            if (behaviour == null) return;
+
+            if (behaviour.gameObject.scene != scene ||
+            string.IsNullOrEmpty(behaviour.gameObject.scene.path) ||
+            !behaviour.gameObject.scene.isLoaded)
+            {
+                return;
+            }
+
+            var serializedObject = new SerializedObject(behaviour);
+            var properties = new List<SerializedProperty>();
+
+            var iterator = serializedObject.GetIterator();
+            while (iterator.NextVisible(true))
+            {
+                properties.Add(serializedObject.FindProperty(iterator.propertyPath));
+            }
+
+            bool modified = false;
+
+            foreach (var property in properties)
+            {
+                var fieldInfo = behaviour.GetType().GetField(property.name,
+                    System.Reflection.BindingFlags.Instance |
+                    System.Reflection.BindingFlags.Public |
+                    System.Reflection.BindingFlags.NonPublic);
+
+                if (fieldInfo == null) continue;
+
+                var attributes = fieldInfo.GetCustomAttributes(typeof(FindAtSceneAttribute), true);
+
+                if (attributes.Length > 0 &&
+                    property.propertyType == SerializedPropertyType.ObjectReference &&
+                    property.objectReferenceValue == null)
+                {
+                    System.Type typeOfObject = fieldInfo.FieldType;
+
+                    UnityEngine.Object foundObject = null;
+
+                    if (scene.isLoaded)
+                    {
+                        var sceneObjects = scene.GetRootGameObjects();
+                        foreach (var sceneObj in sceneObjects)
                         {
-                            System.Type typeOfObject = fieldInfo.FieldType;
-                            UnityEngine.Object foundObject = UnityEngine.Object.FindObjectOfType(typeOfObject);
-
-                            if (foundObject != null)
+                            var component = sceneObj.GetComponentInChildren(typeOfObject, true);
+                            if (component != null)
                             {
-                                property.objectReferenceValue = foundObject;
-                                modified = true;
+                                foundObject = component;
+                                break;
                             }
                         }
                     }
+
+                    if (foundObject != null)
+                    {
+                        property.objectReferenceValue = foundObject;
+                        modified = true;
+                    }
                 }
-                if (modified)
-                {
-                    serializedObject.ApplyModifiedProperties();
-                }
+            }
+
+            if (modified)
+            {
+                serializedObject.ApplyModifiedProperties();
             }
         }
     }

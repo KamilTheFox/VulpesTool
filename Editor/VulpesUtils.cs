@@ -21,7 +21,6 @@ namespace VulpesTool.Editor
             return editors.Any(editor =>
                 editor.target is VulpesMonoBehaviour ||
                 editor.target is VulpesScriptableObject);
-
         }
     }
 }
