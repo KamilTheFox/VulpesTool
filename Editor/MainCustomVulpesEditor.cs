@@ -29,44 +29,11 @@ namespace VulpesTool.Editor
         }
 
     }
-    [InitializeOnLoad]
     public class SceneReferenceTracker
     {
-        private static bool initialized = false;
         private static bool isProcessing;
 
-        static SceneReferenceTracker()
-        {
-            if (!initialized)
-            {
-                EditorApplication.hierarchyChanged += OnHierarchyChanged;
-                EditorSceneManager.sceneOpened += OnSceneOpened;
-                EditorSceneManager.sceneClosed += OnSceneClosed;
-                initialized = true;
-            }
-        }
-
-        private static void OnSceneOpened(UnityEngine.SceneManagement.Scene scene, OpenSceneMode mode)
-        {
-            EditorApplication.delayCall += () =>
-            {
-                UpdateReferences();
-            };
-        }
-
-        private static void OnSceneClosed(UnityEngine.SceneManagement.Scene scene)
-        {
-            EditorApplication.delayCall += () =>
-            {
-                UpdateReferences();
-            };
-        }
-
-        private static void OnHierarchyChanged()
-        {
-            UpdateReferences();
-        }
-
+        [MenuItem("Tools/vulpesTool/UpdateReferencesScene")]
         private static void UpdateReferences()
         {
             if (isProcessing) return;
