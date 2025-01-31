@@ -23,6 +23,8 @@ namespace VulpesTool.Editor
 
         public static void EndTracking()
         {
+            if (Application.isPlaying)
+                return;
             if (isTracking && GUI.changed)
             {
                 Undo.RecordObject(currentTarget, "GUI Change");
